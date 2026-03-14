@@ -55,6 +55,10 @@ function updateInfo() {
     removedMaps.length > 0 ? removedMaps[removedMaps.length - 1].name : "None";
 }
 
+function getToggleInputs() {
+  return document.querySelectorAll('.include-toggle input[type="checkbox"]');
+}
+
 function setControlsDisabled(disabled) {
   isSpinning = disabled;
 
@@ -65,7 +69,7 @@ function setControlsDisabled(disabled) {
   selectAllBtn.disabled = disabled;
   clearAllBtn.disabled = disabled;
 
-  document.querySelectorAll(".map-checkbox input").forEach((checkbox) => {
+  getToggleInputs().forEach((checkbox) => {
     checkbox.disabled = disabled;
   });
 }
@@ -87,6 +91,9 @@ function resetGame() {
   if (remainingMaps.length > 0) {
     resultImage.src = remainingMaps[0].image;
     resultImage.alt = remainingMaps[0].name;
+  } else {
+    resultImage.src = "images/Train.png";
+    resultImage.alt = "Map preview";
   }
 
   resultName.textContent = "Press Spin";
@@ -165,27 +172,31 @@ function renderMaps() {
     }
 
     card.innerHTML = `
-  <div class="map-topbar">
-    <label class="include-toggle">
-      <input type="checkbox" data-map-name="${map.name}" ${map.enabled ? "checked" : ""}>
-      <span class="toggle-ui">
-        <span class="toggle-knob"></span>
-      </span>
-      <span class="toggle-text">${map.enabled ? "Included" : "Excluded"}</span>
-    </label>
-  </div>
+      <div class="map-topbar">
+        <label class="include-toggle">
+          <input
+            type="checkbox"
+            data-map-name="${map.name}"
+            ${map.enabled ? "checked" : ""}
+          >
+          <span class="toggle-ui">
+            <span class="toggle-knob"></span>
+          </span>
+          <span class="toggle-text">${map.enabled ? "Included" : "Excluded"}</span>
+        </label>
+      </div>
 
-  <img src="${map.image}" alt="${map.name}">
-  <div class="map-card-content">
-    <h4>${map.name}</h4>
-    <p>${!map.enabled ? "Excluded" : isRemaining ? "Available" : "Removed"}</p>
-  </div>
-`;
+      <img src="${map.image}" alt="${map.name}">
+      <div class="map-card-content">
+        <h4>${map.name}</h4>
+        <p>${!map.enabled ? "Excluded" : isRemaining ? "Available" : "Removed"}</p>
+      </div>
+    `;
 
     mapsGrid.appendChild(card);
   });
 
-  document.querySelectorAll(".map-checkbox input").forEach((checkbox) => {
+  getToggleInputs().forEach((checkbox) => {
     checkbox.addEventListener("change", handleMapToggle);
     checkbox.disabled = isSpinning;
   });
@@ -266,6 +277,7 @@ async function spinRandomMode() {
   if (isSpinning) return;
 
   const chosenMap = getRandomMapFromRemaining();
+
   await animateSpin(remainingMaps, chosenMap, "Selected map for this round.");
 
   currentSelectedMap = chosenMap;
@@ -347,15 +359,18 @@ function selectAllMaps() {
   allMaps.forEach((map) => {
     map.enabled = true;
   });
+
   resetGame();
 }
 
 function clearAllMaps() {
   if (isSpinning) return;
 
-  allMaps.forEach((map, index) => {
-    map.enabled = index === 0;
+  allMaps.forEach((map) => {
+    map.enabled = false;
   });
+
+  allMaps[0].enabled = true;
   resetGame();
 }
 
