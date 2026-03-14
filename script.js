@@ -20,8 +20,13 @@ let remainingMaps = [];
 let removedMaps = [];
 let currentSelectedMap = null;
 let isSpinning = false;
+
 let isSoundEnabled = JSON.parse(
   localStorage.getItem("cs2SoundEnabled") ?? "true",
+);
+
+let isAnimationEnabled = JSON.parse(
+  localStorage.getItem("cs2AnimationEnabled") ?? "true",
 );
 
 const randomModeBtn = document.getElementById("randomModeBtn");
@@ -29,6 +34,7 @@ const eliminationModeBtn = document.getElementById("eliminationModeBtn");
 const spinBtn = document.getElementById("spinBtn");
 const resetBtn = document.getElementById("resetBtn");
 const toggleSoundBtn = document.getElementById("toggleSoundBtn");
+const toggleAnimationBtn = document.getElementById("toggleAnimationBtn");
 const selectAllBtn = document.getElementById("selectAllBtn");
 const clearAllBtn = document.getElementById("clearAllBtn");
 
@@ -86,6 +92,28 @@ function toggleSound() {
   updateSoundButton();
 }
 
+/* ---------------- ANIMATION ---------------- */
+
+function updateAnimationButton() {
+  toggleAnimationBtn.textContent = isAnimationEnabled
+    ? "Animation: On"
+    : "Animation: Off";
+  toggleAnimationBtn.classList.toggle("animation-off", !isAnimationEnabled);
+}
+
+function toggleAnimation() {
+  if (isSpinning) return;
+
+  isAnimationEnabled = !isAnimationEnabled;
+  localStorage.setItem(
+    "cs2AnimationEnabled",
+    JSON.stringify(isAnimationEnabled),
+  );
+
+  resultCard.classList.remove("spinning", "final-reveal");
+  updateAnimationButton();
+}
+
 /* ---------------- UI / LOGIC ---------------- */
 
 function getEnabledMaps() {
@@ -115,6 +143,7 @@ function setControlsDisabled(disabled) {
   spinBtn.disabled = disabled;
   resetBtn.disabled = disabled;
   toggleSoundBtn.disabled = disabled;
+  toggleAnimationBtn.disabled = disabled;
   randomModeBtn.disabled = disabled;
   eliminationModeBtn.disabled = disabled;
   selectAllBtn.disabled = disabled;
@@ -280,6 +309,21 @@ function sleep(ms) {
 }
 
 async function animateSpin(candidateMaps, finalMap, finalText) {
+  if (!isAnimationEnabled) {
+    showMapInResult(finalMap, finalText);
+    resultCard.classList.remove("spinning");
+    resultCard.classList.add("final-reveal");
+
+    playAudio(spinSound);
+    playAudio(finalSound);
+
+    setTimeout(() => {
+      resultCard.classList.remove("final-reveal");
+    }, 350);
+
+    return;
+  }
+
   setControlsDisabled(true);
 
   stopAudio(spinSound);
@@ -358,6 +402,41 @@ async function spinEliminationMode() {
 
   if (remainingMaps.length > 1) {
     const chosenMap = getRandomMapFromRemaining();
+
+    if (!isAnimationEnabled) {
+      removedMaps.push(chosenMap);
+      remainingMaps = remainingMaps.filter(
+        (map) => map.name !== chosenMap.name,
+      );
+      currentSelectedMap = chosenMap;
+
+      if (remainingMaps.length === 1) {
+        const finalMap = remainingMaps[0];
+        currentSelectedMap = finalMap;
+        showMapInResult(finalMap, "Final map! This is the last remaining map.");
+        playAudio(spinSound);
+        playAudio(finalSound);
+      } else {
+        showMapInResult(
+          chosenMap,
+          `${chosenMap.name} has been removed. ${remainingMaps.length} map(s) remaining.`,
+        );
+        playAudio(spinSound);
+        playAudio(finalSound);
+      }
+
+      resultCard.classList.remove("spinning");
+      resultCard.classList.add("final-reveal");
+
+      setTimeout(() => {
+        resultCard.classList.remove("final-reveal");
+      }, 350);
+
+      renderMaps();
+      updateInfo();
+      flashSelectedCard();
+      return;
+    }
 
     await animateSpin(
       remainingMaps,
@@ -454,8 +533,10 @@ spinBtn.addEventListener("click", async () => {
 
 resetBtn.addEventListener("click", resetGame);
 toggleSoundBtn.addEventListener("click", toggleSound);
+toggleAnimationBtn.addEventListener("click", toggleAnimation);
 selectAllBtn.addEventListener("click", selectAllMaps);
 clearAllBtn.addEventListener("click", clearAllMaps);
 
 updateSoundButton();
+updateAnimationButton();
 resetGame();
