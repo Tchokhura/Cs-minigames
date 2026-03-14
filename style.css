@@ -592,3 +592,13 @@ body {
     transform: scale(1);
   }
 }
+
+#toggleSoundBtn.sound-off {
+  border-color: #4a2b2b;
+  background: linear-gradient(180deg, #2e1d1d 0%, #221616 100%);
+  color: #ffb3b3;
+}
+
+#toggleSoundBtn.sound-off:hover {
+  background: linear-gradient(180deg, #382121 0%, #291818 100%);
+}

@@ -1,88 +1,18 @@
 const allMaps = [
-  {
-    name: "Train",
-    image: "images/Train.png",
-    enabled: true,
-    sound: "sounds/train.mp3",
-  },
-  {
-    name: "Vertigo",
-    image: "images/Vertigo.png",
-    enabled: true,
-    sound: "sounds/vertigo.mp3",
-  },
-  {
-    name: "Warden",
-    image: "images/Warden.png",
-    enabled: true,
-    sound: "sounds/warden.mp3",
-  },
-  {
-    name: "Stronghold",
-    image: "images/Stronghold.png",
-    enabled: true,
-    sound: "sounds/stronghold.mp3",
-  },
-  {
-    name: "Alpine",
-    image: "images/Alpine.png",
-    enabled: true,
-    sound: "sounds/alpine.mp3",
-  },
-  {
-    name: "Office",
-    image: "images/Office.png",
-    enabled: true,
-    sound: "sounds/office.mp3",
-  },
-  {
-    name: "Italy",
-    image: "images/Italy.png",
-    enabled: true,
-    sound: "sounds/italy.mp3",
-  },
-  {
-    name: "Ancient",
-    image: "images/Ancient.png",
-    enabled: true,
-    sound: "sounds/ancient.mp3",
-  },
-  {
-    name: "Nuke",
-    image: "images/Nuke.png",
-    enabled: true,
-    sound: "sounds/nuke.mp3",
-  },
-  {
-    name: "Dust 2",
-    image: "images/Dust 2.png",
-    enabled: true,
-    sound: "sounds/dust2.mp3",
-  },
-  {
-    name: "Mirage",
-    image: "images/Mirage.png",
-    enabled: true,
-    sound: "sounds/mirage.mp3",
-  },
-  {
-    name: "Inferno",
-    image: "images/Inferno.png",
-    enabled: true,
-    sound: "sounds/inferno.mp3",
-  },
-  {
-    name: "Overpass",
-    image: "images/Overpass.png",
-    enabled: true,
-    sound: "sounds/overpass.mp3",
-  },
-  {
-    name: "Anubis",
-    image: "images/Anubis.png",
-    enabled: true,
-    sound: "sounds/anubis.mp3",
-  },
+  { name: "Train", image: "images/Train.png", enabled: true },
+  { name: "Vertigo", image: "images/Vertigo.png", enabled: true },
+  { name: "Warden", image: "images/Warden.png", enabled: true },
+  { name: "Stronghold", image: "images/Stronghold.png", enabled: true },
+  { name: "Alpine", image: "images/Alpine.png", enabled: true },
+  { name: "Office", image: "images/Office.png", enabled: true },
+  { name: "Italy", image: "images/Italy.png", enabled: true },
+  { name: "Ancient", image: "images/Ancient.png", enabled: true },
+  { name: "Nuke", image: "images/Nuke.png", enabled: true },
+  { name: "Dust 2", image: "images/Dust 2.png", enabled: true },
+  { name: "Mirage", image: "images/Mirage.png", enabled: true },
+  { name: "Inferno", image: "images/Inferno.png", enabled: true },
+  { name: "Overpass", image: "images/Overpass.png", enabled: true },
+  { name: "Anubis", image: "images/Anubis.png", enabled: true },
 ];
 
 let currentMode = "random";
@@ -90,11 +20,15 @@ let remainingMaps = [];
 let removedMaps = [];
 let currentSelectedMap = null;
 let isSpinning = false;
+let isSoundEnabled = JSON.parse(
+  localStorage.getItem("cs2SoundEnabled") ?? "true",
+);
 
 const randomModeBtn = document.getElementById("randomModeBtn");
 const eliminationModeBtn = document.getElementById("eliminationModeBtn");
 const spinBtn = document.getElementById("spinBtn");
 const resetBtn = document.getElementById("resetBtn");
+const toggleSoundBtn = document.getElementById("toggleSoundBtn");
 const selectAllBtn = document.getElementById("selectAllBtn");
 const clearAllBtn = document.getElementById("clearAllBtn");
 
@@ -125,6 +59,8 @@ function stopAudio(audio) {
 }
 
 function playAudio(audio) {
+  if (!isSoundEnabled) return;
+
   try {
     audio.currentTime = 0;
     audio.play().catch(() => {});
@@ -133,13 +69,21 @@ function playAudio(audio) {
   }
 }
 
-function playMapSound(map) {
-  if (!map || !map.sound) return;
+function updateSoundButton() {
+  toggleSoundBtn.textContent = isSoundEnabled ? "Sound: On" : "Sound: Off";
+  toggleSoundBtn.classList.toggle("sound-off", !isSoundEnabled);
+}
 
-  const mapAudio = new Audio(map.sound);
-  mapAudio.preload = "auto";
-  mapAudio.volume = 0.5;
-  mapAudio.play().catch(() => {});
+function toggleSound() {
+  isSoundEnabled = !isSoundEnabled;
+  localStorage.setItem("cs2SoundEnabled", JSON.stringify(isSoundEnabled));
+
+  if (!isSoundEnabled) {
+    stopAudio(spinSound);
+    stopAudio(finalSound);
+  }
+
+  updateSoundButton();
 }
 
 /* ---------------- UI / LOGIC ---------------- */
@@ -170,6 +114,7 @@ function setControlsDisabled(disabled) {
 
   spinBtn.disabled = disabled;
   resetBtn.disabled = disabled;
+  toggleSoundBtn.disabled = disabled;
   randomModeBtn.disabled = disabled;
   eliminationModeBtn.disabled = disabled;
   selectAllBtn.disabled = disabled;
@@ -381,7 +326,6 @@ async function animateSpin(candidateMaps, finalMap, finalText) {
   }, 550);
 
   playAudio(finalSound);
-  playMapSound(finalMap);
 
   setControlsDisabled(false);
 }
@@ -446,7 +390,6 @@ async function spinEliminationMode() {
       }, 550);
 
       playAudio(finalSound);
-      playMapSound(finalMap);
 
       currentSelectedMap = finalMap;
       setControlsDisabled(false);
@@ -471,7 +414,6 @@ async function spinEliminationMode() {
       "Final map already selected. Press Reset to start again.",
     );
     playAudio(finalSound);
-    playMapSound(finalMap);
     renderMaps();
     updateInfo();
     flashSelectedCard();
@@ -511,7 +453,9 @@ spinBtn.addEventListener("click", async () => {
 });
 
 resetBtn.addEventListener("click", resetGame);
+toggleSoundBtn.addEventListener("click", toggleSound);
 selectAllBtn.addEventListener("click", selectAllMaps);
 clearAllBtn.addEventListener("click", clearAllMaps);
 
+updateSoundButton();
 resetGame();
