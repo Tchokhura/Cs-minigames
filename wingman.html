@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CS2 Wingman Map Picker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="background-overlay"></div>
+
+    <main class="container">
+      <a href="index.html" class="back-link">← Back to Modes</a>
+
+      <header class="hero">
+        <h1>CS2 Wingman Picker</h1>
+        <p>Spin the maps or eliminate them until one Wingman map remains.</p>
+      </header>
+
+      <section class="mode-switch">
+        <button id="randomModeBtn" class="mode-btn active">Random Spin</button>
+        <button id="eliminationModeBtn" class="mode-btn">
+          Elimination Mode
+        </button>
+      </section>
+
+      <section class="spinner-section">
+        <div class="spinner-box">
+          <p class="spinner-label">Current Result</p>
+
+          <div id="resultCard" class="result-card">
+            <img
+              id="resultImage"
+              src="images/Inferno.png"
+              alt="Selected wingman map image"
+            />
+            <h2 id="resultName">Press Spin</h2>
+            <p id="resultText">The selected map will appear here.</p>
+          </div>
+
+          <div class="actions">
+            <button id="spinBtn" class="primary-btn">Spin</button>
+            <button id="resetBtn" class="secondary-btn">Reset</button>
+            <button id="toggleSoundBtn" class="secondary-btn">Sound: On</button>
+            <button id="toggleAnimationBtn" class="secondary-btn">
+              Animation: On
+            </button>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <h3>Game Info</h3>
+          <p>
+            <strong>Mode:</strong> <span id="currentModeText">Random Spin</span>
+          </p>
+          <p>
+            <strong>Remaining Maps:</strong> <span id="remainingCount">6</span>
+          </p>
+          <p>
+            <strong>Last Removed:</strong> <span id="lastRemoved">None</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="maps-section">
+        <div class="section-header">
+          <div>
+            <h2>Wingman Maps</h2>
+            <p>Choose which Wingman maps should be included before spinning.</p>
+          </div>
+
+          <div class="selection-actions">
+            <button id="selectAllBtn" class="secondary-btn small-btn">
+              Select All
+            </button>
+            <button id="clearAllBtn" class="secondary-btn small-btn">
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <div class="selection-info">
+          <p>
+            <strong>Selected Maps:</strong> <span id="selectedCount">6</span>
+          </p>
+        </div>
+
+        <div id="mapsGrid" class="maps-grid"></div>
+      </section>
+    </main>
+
+    <script src="wingman.js"></script>
+  </body>
+</html>
