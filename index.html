@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,6 +18,16 @@
     <div class="home-bg-blur home-bg-blur-2"></div>
 
     <main class="container home-container">
+      <header class="topbar">
+        <a href="index.html" class="topbar-brand">CS2 Picker</a>
+
+        <div class="topbar-actions">
+          <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+            Dark Mode
+          </button>
+        </div>
+      </header>
+
       <header class="hero hero-home hero-home-advanced">
         <div class="hero-kicker">Counter-Strike 2</div>
         <h1>Map Picker</h1>
@@ -99,5 +109,7 @@
         </a>
       </section>
     </main>
+
+    <script src="theme.js"></script>
   </body>
 </html>

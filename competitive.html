@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,16 @@
     <div class="background-overlay"></div>
 
     <main class="container">
-      <a href="index.html" class="back-link">← Back to Modes</a>
+      <header class="topbar">
+        <a href="index.html" class="topbar-brand">CS2 Picker</a>
+
+        <div class="topbar-actions">
+          <a href="index.html" class="back-link topbar-back">← Modes</a>
+          <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+            Dark Mode
+          </button>
+        </div>
+      </header>
 
       <header class="hero">
         <h1>CS2 Competitive Picker</h1>
@@ -95,6 +104,7 @@
       </section>
     </main>
 
+    <script src="theme.js"></script>
     <script src="competitive.js"></script>
   </body>
 </html>
